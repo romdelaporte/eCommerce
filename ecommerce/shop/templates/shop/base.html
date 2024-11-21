@@ -5,50 +5,120 @@
   <head>
     <meta charset="utf-8" />
     <title>{% block title %}{% trans "My shop" %}{% endblock %}</title>
-    <link href="{% static "css/base.css" %}" rel="stylesheet">
+    <link href="{% static "css/base.css" %}" type="text/css" rel="stylesheet">
+    <link href="{% static 'css/output.css' %}" type="text/css" rel="stylesheet" >
   </head>
   <body>
-    <div id="header">
-      <a href="/" class="logo">{% trans "My shop" %}</a>
-      {% get_current_language as LANGUAGE_CODE %}
-      {% get_available_languages as LANGUAGES %}
-      {% get_language_info_list for LANGUAGES as languages %}
-      <div class="languages">
-        <p>{% trans "Language" %}:</p>
-        <ul class="languages">
-          {% for language in languages %}
-            <li>
-              <a href="/{{ language.code }}/"
-              {% if language.code == LANGUAGE_CODE %} class="selected"{% endif %}>
-                {{ language.name_local }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
+    <nav class="sticky top-0 z-10 bg-gray-800">
+      <div class="mx-auto max-w-9xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 items-center justify-between">
+          <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+            <div class="flex flex-shrink-0 items-center">
+              <img class="h-8 w-auto" src="{% static 'img/logo.png' %}" alt="">
+            </div>
+            <div class="hidden sm:ml-6 sm:block">
+              <div class="flex space-x-4">
+                <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+                <a href="/" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">My Shop</a>
+                <!-- <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Saber más</a> -->
+              </div>
+            </div>
+          </div>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">  
+            <div class="relative ml-3">
+              {% get_current_language as LANGUAGE_CODE %}
+              {% get_available_languages as LANGUAGES %}
+              {% get_language_info_list for LANGUAGES as languages %}
+              <div class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium languages">
+                <p>{% trans "Language" %}:</p>
+                <ul class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium languages">
+                  {% for language in languages %}
+                    <li>
+                      <a href="/{{ language.code }}/"
+                      {% if language.code == LANGUAGE_CODE %} class="selected"{% endif %}>
+                        {{ language.name_local }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>   
       </div>
-    </div>
+    
+      <!-- Mobile menu, show/hide based on menu state. -->
+      <div class="sm:hidden" id="mobile-menu">
+        <div id="small-menu" class="hidden space-y-1 px-2 pb-3 pt-2">
+          <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+          <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">My Shop</a>
+          <!-- <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Saber Más</a> -->
+          <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Buscar</a>
+        </div>
+      </div>
+  </nav>
+  <p class="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">Get free delivery on orders over $100</p>
 
-    <div id="subheader">
-      <div class="cart">
-        {% with total_items=cart|length %}
-          {% if total_items > 0 %}
-            {% trans "Your cart" %}:
-            <a href="{% url "cart:cart_detail" %}">
-              {% blocktrans with total=cart.get_total_price count items=total_items %}
-                {{ items }} item, ${{ total }}
-              {% plural %}
-                {{ items }} items, ${{ total }}
-              {% endblocktrans %}
+  <nav aria-label="Top" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="border-b border-gray-200">
+      <div class="flex h-16 items-center">
+        <!-- Mobile menu toggle, controls the 'mobileMenuOpen' state. -->
+        <button type="button" class="relative rounded-md bg-white p-2 text-gray-400 lg:hidden">
+          <span class="absolute -inset-0.5"></span>
+          <span class="sr-only">Open menu</span>
+          <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+
+
+
+        <div class="ml-auto flex items-center">
+          
+          <div class="hidden lg:ml-8 lg:flex">
+            <a href="#" class="flex items-center text-gray-700 hover:text-gray-800">
+              <img src="https://tailwindui.com/plus/img/flags/flag-canada.svg" alt="" class="block h-auto w-5 shrink-0">
+              <span class="ml-3 block text-sm font-medium">CAD</span>
+              <span class="sr-only">, change currency</span>
             </a>
-          {% elif not order %}
-            {% trans "Your cart is empty." %}
-          {% endif %}
-        {% endwith %}
+          </div>
+
+          <!-- Search -->
+          <div class="flex lg:ml-6">
+            <a href="#" class="p-2 text-gray-400 hover:text-gray-500">
+              <span class="sr-only">Search</span>
+              <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+            </a>
+          </div>
+
+          <!-- Cart -->
+          <div class="ml-4 flow-root lg:ml-6">
+            <a href="{% url "cart:cart_detail" %}" class="group -m-2 flex items-center p-2">
+              <svg class="size-6 shrink-0 text-gray-400 group-hover:text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+              </svg>
+              {% with total_items=cart|length %}
+                {% if total_items > 0 %}
+                  
+                  <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{{ total_items }} </span>
+                 
+                  {% elif not order %}
+                  <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">0</span>
+                  {% endif %}
+                {% endwith %}
+              <span class="sr-only">items in cart, view bag</span>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
-    <div id="content">
+  </nav>
+
+   
+      
       {% block content %}
       {% endblock %}
-    </div>
   </body>
 </html>

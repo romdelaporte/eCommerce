@@ -6,30 +6,137 @@
 {% endblock %}
 
 {% block content %}
-  <h1>{% trans "Checkout" %}</h1>
-  <div class="order-info">
-    <h3>{% trans "Your order" %}</h3>
-    <ul>
-      {% for item in cart %}
-        <li>
-          {{ item.quantity }}x {{ item.product.name }}
-          <span>${{ item.total_price|floatformat:2 }}</span>
-        </li>
-      {% endfor %}
-      {% if cart.coupon %}
-        <li>
-          {% blocktrans with code=cart.coupon.code discount=cart.coupon.discount %}
-            "{{ code }}" ({{ discount }}% off)
-          {% endblocktrans %}
-          <span class="neg">- ${{ cart.get_discount|floatformat:2 }}</span>
-        </li>
-      {% endif %}
-    </ul>
-    <p>{% trans "Total" %}: ${{ cart.get_total_price_after_discount|floatformat:2 }}</p>
-  </div>
-  <form method="post" class="order-form">
-    {{ form.as_p }}
-    <p><input type="submit" value="{% trans "Place order" %}"></p>
-    {% csrf_token %}
-  </form>
+<!--
+  This example requires some changes to your config:
+  
+  ```
+  // tailwind.config.js
+  module.exports = {
+    // ...
+    plugins: [
+      // ...
+      require('@tailwindcss/forms'),
+    ],
+  }
+  ```
+-->
+<!--
+  This example requires updating your template:
+
+  ```
+  <html class="h-full bg-white">
+  <body class="h-full">
+  ```
+-->
+
+
+<main class="lg:flex lg:min-h-full lg:flex-row-reverse lg:overflow-hidden">
+  
+  <h1 class="sr-only">{% trans "Checkout" %}</h1>
+
+  <!-- Mobile order summary -->
+  <section aria-labelledby="order-heading" class="bg-gray-50 px-4 py-6 sm:px-6 lg:hidden">
+    <div class="mx-auto max-w-lg">
+      <div class="flex items-center justify-between">
+        <h2 id="order-heading" class="text-lg font-medium text-gray-900">{% trans "Your order" %}</h2>
+        <button type="button" class="font-medium text-indigo-600 hover:text-indigo-500" aria-controls="disclosure-1" aria-expanded="false">
+          <!-- Only display for open option. -->
+          <span>Hide full summary</span>
+          <!-- Don't display for open option. -->
+          <span>Show full summary</span>
+        </button>
+      </div>
+
+      <div id="disclosure-1">
+
+        <dl class="mt-10 space-y-6 text-sm font-medium text-gray-500">
+          <div class="flex justify-between">
+            <dt>Subtotal</dt>
+            <dd class="text-gray-900">${{ cart.get_total_price }}</dd>
+          </div>
+          <div class="flex justify-between">
+            {% if cart.coupon %}
+            <dt class="flex">
+              Discount
+              {% blocktrans with code=cart.coupon.code discount=cart.coupon.discount %}
+              <span class="ml-2 rounded-full bg-gray-200 px-2 py-0.5 text-xs tracking-wide text-gray-600">{{ code }}</span>  
+              <span class="text-gray-900"></span>
+              {% endblocktrans %}
+            </dt>
+            <dd class="text-gray-900">- ${{ cart.get_discount|floatformat:2 }}</dd>
+            {% endif %}
+          </div>
+          <div class="flex justify-between">
+            <dt>Taxes</dt>
+            <dd class="text-gray-900">$0</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>Shipping</dt>
+            <dd class="text-gray-900">$0</dd>
+          </div>
+        </dl>
+      </div>
+
+      <p class="mt-6 flex items-center justify-between border-t border-gray-200 pt-6 text-sm font-medium text-gray-900">
+        <span class="text-base">{% trans "Total" %}</span>
+        <span class="text-base">${{ cart.get_total_price_after_discount|floatformat:2 }}</span>
+      </p>
+    </div>
+  </section>
+
+
+ 
+
+      <!-- Order summary -->
+      <section aria-labelledby="summary-heading" class="hidden w-full max-w-md flex-col bg-gray-50 lg:flex">
+        <h2 id="summary-heading" class="sr-only">{% trans "Your order" %}</h2>        
+
+        <div class="sticky bottom-0 flex-none border-t border-gray-200 bg-gray-50 p-6">
+    
+          <dl class="mt-10 space-y-6 text-sm font-medium text-gray-500">
+            <div class="flex justify-between">
+              <dt>Subtotal</dt>
+              <dd class="text-gray-900">${{ cart.get_total_price }}</dd>
+            </div>
+            <div class="flex justify-between">
+              {% if cart.coupon %}
+                <dt class="flex"> 
+                  Discount
+                  {% blocktrans with code=cart.coupon.code discount=cart.coupon.discount %}
+                  <span class="ml-2 rounded-full bg-gray-200 px-2 py-0.5 text-xs tracking-wide text-gray-600">{{ code }}</span>  
+                  <span class="text-gray-900"></span>
+                  {% endblocktrans %}
+                </dt>
+                {% endif %}
+              <dd class="text-gray-900">- ${{ cart.get_discount|floatformat:2 }}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt>Taxes</dt>
+              <dd class="text-gray-900">$0</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt>Shipping</dt>
+              <dd class="text-gray-900">$0</dd>
+            </div>
+            <div class="flex items-center justify-between border-t border-gray-200 pt-6 text-gray-900">
+              <dt class="text-base">{% trans "Total" %}</dt>
+              <dd class="text-base">${{ cart.get_total_price_after_discount|floatformat:2 }}</dd>
+            </div>
+          </dl>
+        </div>
+    </div>
+    </div>
+  </section>
+  
+
+  <section aria-labelledby="payment-heading" class="flex-auto overflow-y-auto px-4 pb-16 pt-12 sm:px-6 sm:pt-16 lg:px-8 lg:pb-24 lg:pt-0">
+    <div class="mx-auto max-w-lg">
+      <form method="post" class="mt-6">
+        {{ form.as_p }}
+          <p><input type="submit" value="{% trans "Place order" %}"  class="rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"></p>
+          {% csrf_token %}  
+      </form>
+    </div>
+  </section>
+</main>
 {% endblock %}

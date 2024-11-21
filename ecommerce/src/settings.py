@@ -150,7 +150,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -164,6 +168,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 CART_SESSION_ID = 'cart'
 
+# Celery settings
+#RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
+#BROKER_URL = os.getenv("BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
+#CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "amqp://guest:guest@rabbitmq:5672//")
 
 # Gmail Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -182,15 +191,16 @@ EMAIL_USE_TLS = True
 
 # Stripe settings
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
-STRIPE_SECRET_KEY = os.getenv("STRIP_SECRET_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_API_VERSION = '2022-08-01'
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 
 # Redis settings
-REDIS_HOST = 'redis'
-REDIS_PORT = 6379
-REDIS_DB = 1
+REDIS_HOST = os.getenv("REDIS_HOST", 'localhost')
+REDIS_PORT = os.getenv("REDIS_PORT", '6379')
+REDIS_DB = os.getenv("REDIS_DB", 0)
+
 
 # django-parler settings
 PARLER_LANGUAGES = {
