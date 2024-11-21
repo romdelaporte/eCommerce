@@ -21,7 +21,7 @@
 5. run in another terminal `docker compose exec -it web sh -c "cd ecommerce && celery -A src flower"`. Visit localhost:5555 <- You can add it to docker compose
 6. Install Stripe CLI in your local machine and login with your credentials
 7. run `stripe listen --forward-to localhost:8000/payment/webhook/`  -> visit https://dashboard.stripe.com/test/webhooks for displayed webhooks
-8- For recommended products there's a script in shop.management.commands. To run type `docker compose exec web sh -c "python manage.py add_recommend"`
+8. For recommended products there's a script in shop.management.commands. To run type `docker compose exec web sh -c "python manage.py add_recommend"`
 
 ### For development:
 - I have excluded Postres for this project to make it easier for newerst to get started.
