@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 "Subject here",
                 "Here is the message.",
                 "No-reply",
-                ["rodrigod@delaportedigital.com"],
+                ["someemailtorecieve@gmail.com"],
                 fail_silently=False,
             )
         self.stdout.write(
